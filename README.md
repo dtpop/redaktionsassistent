@@ -44,6 +44,7 @@ dump($articles);
    - Name eintragen
    - Datensatz übernehmen (Verwaltungs Id wird angelegt)
    - Artikel anlegen
+ 
 
 ## Todo
 
