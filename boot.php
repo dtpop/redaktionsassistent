@@ -1,5 +1,9 @@
 <?php
 
+setlocale(LC_TIME,'de');
+
+rex_yform_manager_dataset::setModelClass('rex_redaktionsassistent', ra_data::class);
+
 rex_yform::addTemplatePath($this->getPath('ytemplates'));
 
 if (rex_addon::get('yrewrite')->isAvailable()) {
@@ -9,9 +13,6 @@ if (rex_addon::get('yrewrite')->isAvailable()) {
 
 rex_extension::register('PACKAGES_INCLUDED', function( $ep ) {
 
-    setlocale(LC_ALL,rex_clang::getCurrent()->getCode());
-
-    
     if (rex::isBackend() && rex_request('page') == 'redaktionsassistent/tasks') {
         
         // --bitte auswählen-- in Liste ersetzen

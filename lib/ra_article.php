@@ -11,6 +11,12 @@
  *
  * @author wolfgang
  */
+
+class ra_data extends \rex_yform_manager_dataset {
+    
+    
+}
+
 class ra_article {
     
     
@@ -134,32 +140,8 @@ class ra_article {
         $sql->update();
         
     }
-    
-    
-    /**
-     * liefert die Teaser für die 3 neuesten Artikel der Kategorie (außer dem aktuellen Artikel)
-     * 
-     */
-    public static function get_weitere_artikel ($count = 3) {
-        $current = rex_article::getCurrent();
-        // keine Startartikel
-        if ($current->isStartArticle()) return false;
-        $path = explode('|',trim($current->getPath(),'|'));
-        // nicht unter der Inhaltsebene (z.B. Impressum etc.) ausgeben
-        if (count($path) < 3) return false;
-        
-        $article_ids = vphelper::find_newest_articles(4, $current->getCategoryId());
-        $teasers = [];
-        foreach ($article_ids as $art_id) {
-            // den aktuellen Artikel nicht aufnehmen
-            if ($art_id == $current->getId()) continue;
-            $ta = rex_article::get($art_id);
-            $teasers[] = vphelper::get_article_intro($ta);
-            if (count($teasers) == $count) break;
-        }
-        return $teasers;
-        
-    }
-    
+
+
+
     
 }

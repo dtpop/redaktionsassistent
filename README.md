@@ -47,15 +47,73 @@ dump($articles);
 
 ![Screenshot](https://github.com/dtpop/redaktionsassistent/blob/master/assets/bildschirm_redaktionsassistent_fuer_redaxo_bearb.jpg)
 
+## Ausgabe
+
+Die Ausgabe der Artikel erfolgt ganz normal über Module. In den Übersichten können Funktionen aus dem Redaktionsassistenten verwendet werden. Somit kann auch bei der Ausgabe eine automatische Sortierung nach Online-Datum (oder einem anderen Feld) umgesetzt werden.
+
+Folgender vereinfachter Modulcode kann als Blaupause verwendet werden:
+
+```php
+<?php
+$articles = ra_helper::find_newest_articles(0, rex_category::getCurrent()->getId());
+?>
+<ul>
+<?php foreach ($articles as $art) : ?>
+    <li>
+        <p><?= date('d.m.Y', $art->getValue('art_online_from'))) ?></p>
+        <h3><?= $art->getName() ?></h3>
+        <p><?= $art->getValue('art_description') ?></p>
+        <p><a href="<?= $art->getUrl() ?>">Mehr erfahren ...</a></p>
+    </li>
+<?php endforeach ?>
+</ul>
+```
+
+## Yorm Ausgabe
+
+Für die Ausgabe steht ein einfaches Yorm Objekt zur Verfügung, welches in eigenen Funktionen und Erweiterungen genutzt werden kann.
+
+Angenommen, es wird in der Verwaltungstabelle des Redaktionsassistenten ein zusätzliches Feld `important` als Checkbox hinzugefügt, kann folgender Modulcode auf der Startseite die wichtigsten Teaser anzeigen:
+
+```php
+<?php
+// Yorm Query holen
+$query = ra_helper::get_ra_query();
+// Query erweitern
+$query
+    ->orderBy('important', 'desc')
+    ->orderBy('art_online_from', 'desc')
+;
+$query->limit(0,3);
+// Daten holen
+$items = $query->find();
+?>
+
+<ul>
+<?php foreach ($items as $item) : ?>
+    <li>
+        <p><?= date('d.m.Y', $item->rex_art_online_from) ?></p>
+        <h3><?= $item->name ?></h3>
+        <p><?= $item->rex_art_description ?></p>
+        <p><a href="<?= rex_getUrl($item->rex_article) ?>">Mehr erfahren ...</a></p>
+    </li>
+<?php endforeach; ?>
+</ul>
+
+```
+
+Bei letzterem Modulcode werden die wichtigsten Artikel bevorzugt (durch die Sortierung important = desc). Anschließend wird mit den neuesten Artikel auf die gewünschte Anzahl von 3 Einträgen (limit(0,3)) aufgefüllt.
+Das Yorm Objekt berücksichtigt bereits art_online_from, art_online_to und status. Da es als Query zur Verfügung steht, kann es über beliebige Yorm Funktionen erweitert werden.
+
+
 ## Todo
 
-- Yorm Objekte erstellen und dokumentieren
 - flexible Synchronisation weiterer Metainfos implementieren (z.B. für besondere Hervorhebung bzw. Ausgabe auf der Startseite usw.).
 
 ## Danke
 
 - Yakamara für REDAXO!
-- Polarpixel für das gemeinsame Projekt, das dieses AddOn finanziert hat
+- Polarpixel für das gemeinsame Projekt, das dieses AddOn initiiert und zum Teil finanziert hat
 - Der Community für die großartige Unterstützung in allen Lebenslagen (es wären zu viele Namen um alle zu nennen)
 - Christoph Böcker für den coolen Tipp https://friendsofredaxo.github.io/tricks/addons/yform/im-addon
 - Kunden Felix & Oliver für die coole Idee und die kooperative Entwicklung
