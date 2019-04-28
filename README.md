@@ -4,7 +4,7 @@
 
 Der Redaktionsassistent dient zur Verwaltung von Artikeln in einer separaten yform Tabelle. Dabei bleiben die Inhalte wie gehabt in REDAXO Artikeln. Die Tabelle im Redaktionsassistenten kann zum schnellen Zugriff auf Artikel genutzt werden. Sie lässt sich für Notizen zum Bearbeitungsstand verwenden und man kann schnell den aktuellen Stand aller Artikel einsehen und filtern. Insbesondere für Seiten, die Inhalte wie Blogartikel darstellen, kann der Redaktionsassistent wertvolle Dienste leisten. Die Tabelle kann um eigene Felder erweitert werden.
 
-Voraussetzung für die Verwendung des Redaktionsassistenten sind die Standard Metainfo Felder für den Artikel `art_online_from`, `art_online_to` und `art_description`. Wenn diese noch nicht vorhanden sind, werden sie bei der Installation des Redaktionsassistenten angelegt. Weiterhin wird das AddOn structure_plus vorausgesetzt. In diesem AddOn wird die Farbeinstellung für die Darstellung (geplant, Veröffentlichung in der Zukunft, online, offline, abgelaufen) konfiguriert.
+Voraussetzung für die Verwendung des Redaktionsassistenten sind die Standard Metainfo Felder für den Artikel `art_online_from`, `art_online_to` und `art_description`. Wenn diese noch nicht vorhanden sind, werden sie bei der Installation des Redaktionsassistenten angelegt. Weiterhin wird das AddOn structure_plus vorausgesetzt. In diesem AddOn wird die Farbeinstellung für die Darstellung (geplant, Veröffentlichung in der Zukunft, online, offline, abgelaufen) konfiguriert. Der Status gesperrt wird berücksichtigt, wenn das AddOn accessdenied eingesetzt wird.
 
 Der Redaktionsassistent vergibt für jeden Artikel eine eigene Id. Dies ist nicht die Artikel-Id des REDAXO Artikels sondern die Id des Datensatzes der yform Tabelle vom Redaktionsassistent. Durch die eigene Rewriter Klasse wird diese Id an die Url angehängt. Damit können auch Artikel mit gleichem Namen verwendet werden. Es entsteht kein Konflikt bei Artikeln mit gleichem Namen.
 
@@ -53,6 +53,6 @@ dump($articles);
 ## Danke
 
 - Yakamara für REDAXO!
-- Die Community für die großartige Unterstützung in allen Lebenslagen (es wären zu viele Namen um alle zu nennen)
+- Der Community für die großartige Unterstützung in allen Lebenslagen (es wären zu viele Namen um alle zu nennen)
 - Christoph Böcker für den coolen Tipp https://friendsofredaxo.github.io/tricks/addons/yform/im-addon
 - Kunden Felix & Oliver für die coole Idee und die kooperative Entwicklung
