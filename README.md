@@ -44,7 +44,8 @@ dump($articles);
    - Name eintragen
    - Datensatz übernehmen (Verwaltungs Id wird angelegt)
    - Artikel anlegen
- 
+
+![Screenshot](https://github.com/dtpop/redaktionsassistent/blob/master/assets/bildschirm_redaktionsassistent_fuer_redaxo_bearb.jpg)
 
 ## Todo
 
