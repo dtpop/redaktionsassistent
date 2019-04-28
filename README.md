@@ -44,6 +44,7 @@ dump($articles);
    - Name eintragen
    - Datensatz übernehmen (Verwaltungs Id wird angelegt)
    - Artikel anlegen
+ 
 
 ## Todo
 
@@ -53,6 +54,6 @@ dump($articles);
 ## Danke
 
 - Yakamara für REDAXO!
-- Die Community für die großartige Unterstützung in allen Lebenslagen (es wären zu viele Namen um alle zu nennen)
+- Der Community für die großartige Unterstützung in allen Lebenslagen (es wären zu viele Namen um alle zu nennen)
 - Christoph Böcker für den coolen Tipp https://friendsofredaxo.github.io/tricks/addons/yform/im-addon
 - Kunden Felix & Oliver für die coole Idee und die kooperative Entwicklung
