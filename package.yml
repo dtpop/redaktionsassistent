@@ -1,0 +1,18 @@
+package: redaktionsassistent
+version: dev
+author: Wolfgang Bund
+supportpage: www.redaxo.org/de/forum/
+
+page:
+    title: Redaktionsassistent
+    pjax: true
+    icon: rex-icon rex-icon-system
+    subpages:
+        tasks:
+            title: Bearbeitung
+requires:
+    redaxo: '^5.5'
+    packages:
+        structure: '^2.0'
+        structure_plus: '>0,<9'
+        yform/manager: '>2,<4'
