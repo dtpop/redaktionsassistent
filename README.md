@@ -55,6 +55,7 @@ dump($articles);
 ## Danke
 
 - Yakamara für REDAXO!
+- Polarpixel für das gemeinsame Projekt, das dieses AddOn finanziert hat
 - Der Community für die großartige Unterstützung in allen Lebenslagen (es wären zu viele Namen um alle zu nennen)
 - Christoph Böcker für den coolen Tipp https://friendsofredaxo.github.io/tricks/addons/yform/im-addon
 - Kunden Felix & Oliver für die coole Idee und die kooperative Entwicklung
