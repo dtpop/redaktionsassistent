@@ -201,7 +201,7 @@ class ra_helper {
 
         $query
             ->alias('rad')
-            ->leftJoin('rex_article','rex','rad.rex_article','rex.pid')
+            ->leftJoin('rex_article','rex','rad.rex_article','rex.id')
             ->whereRaw('(ISNULL(rex.art_online_to) OR rex.art_online_to = "0" OR rex.art_online_to = "" OR  rex.art_online_to > :art_online_to)',['art_online_to'=>(string) time()])
             ->whereRaw('(rex.art_online_from < :art_online_from)',['art_online_from'=>(string) time()])
             ->where('art_status', 1)
