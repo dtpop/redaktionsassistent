@@ -41,11 +41,7 @@ rex_extension::register('PACKAGES_INCLUDED', function( $ep ) {
                     $article = rex_article::get($art_id);
                     if ($article instanceof rex_article) {
                         $cat_id = $article->getCategoryId();
-                        if ($cat_id) {
-                            $name = '<a href="/redaxo/index.php?page=content/edit&category_id=' . $cat_id . '&article_id=' . $art_id . '&clang=1&mode=edit">' . $name . '</a>';
-                        } else {
-                            $name .= ' <strong>[Kategoriefehler]</strong>';                            
-                        }
+                        $name = '<a href="/redaxo/index.php?page=content/edit&category_id=' . $cat_id . '&article_id=' . $art_id . '&clang=1&mode=edit">' . $name . '</a>';
                     } else {
                         $name = '<strike>' . $name . '</strike> (gelöscht!)';
                     }
