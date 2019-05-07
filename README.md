@@ -47,6 +47,22 @@ dump($articles);
 
 ![Screenshot](https://github.com/dtpop/redaktionsassistent/blob/master/assets/bildschirm_redaktionsassistent_fuer_redaxo_bearb.jpg)
 
+
+## Vorhandene REDAXO Artikel dem Redaktionsassistenten hinzufügen
+
+Der Redaktionsassistent ist dafür gedacht, Arbeitsdatensätze zunächst im Redaktionsassistenten anzulegen und anschließend über den Redaktionsassistenten den REDAXO Artikel anzulegen.
+
+Es kann aber Gründe geben, dass vorhandene REDAXO Artikel dem Redaktionsassistenten hinzugefügt werden sollen. Das kann der Fall sein, wenn der Redaktionsassistent in ein bereits existierende Seite installiert wird. Möglicherweise hat auch jemand versehentlich einen REDAXO Artikel ohne Redaktionsassistent angelegt und dieser soll trotzdem über den Redaktionsassistent verwaltet werden.
+
+Hierfür verfügt der Redaktionsassistent über eine eigene Seite "Artikel zuordnen". Es werden dort nur Artikel aufgelistet, die auch über den Redaktionsassistent verwaltet werden können. Es werden keine Startartikel aufgeführt und es werden auch keine Artikel aufgeführt, die bereits über den Redaktionsassistent verwaltet werden.
+
+Mit den Checkboxen bzw. mit dem Button "Alle markieren" können jene Artikel markiert werden, die in den Redaktionsassistenten aufgenommen werden sollen. Mit einem Klick auf den Button "Markierte Artikel zuordnen" geht es los.
+
+In den Datensatz des Redaktionsassistenten werden übernommen: Name des Artikels, Kategorie, art_online_from und Status.
+
+Anschließend kann der Artikel auch über den Redaktionsassistenten aufgerufen werden.
+
+
 ## Ausgabe
 
 Die Ausgabe der Artikel erfolgt ganz normal über Module. In den Übersichten können Funktionen aus dem Redaktionsassistenten verwendet werden. Somit kann auch bei der Ausgabe eine automatische Sortierung nach Online-Datum (oder einem anderen Feld) umgesetzt werden.

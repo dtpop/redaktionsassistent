@@ -113,7 +113,7 @@ rex_extension::register('PACKAGES_INCLUDED', function( $ep ) {
                             $class_additional = structure_plus::get_row_class($article->getValue('art_online_from'), $article->getValue('art_online_to'), $article->getValue('status'));
                         }
                     }
-                    return '<span class="' . $class_additional . '">' . date('d-m-Y',strtotime($date)) . '</span>';
+                    return '<span class="text-nowrap ' . $class_additional . '">' . date('d-m-Y',strtotime($date)) . '</span>';
                 });
 
                 rex_extension::register('OUTPUT_FILTER', function( $ep ) {
@@ -160,6 +160,7 @@ rex_extension::register('PACKAGES_INCLUDED', function( $ep ) {
         });
 
 
+        /*
         rex_extension::register('YFORM_MANAGER_DATA_PAGE', function( $ep ) {
             rex_extension::register('OUTPUT_FILTER', function( $ep ) {
                 $data_id = rex_request('data_id', 'int', '');
@@ -174,6 +175,8 @@ rex_extension::register('PACKAGES_INCLUDED', function( $ep ) {
                 return $text;
             });
         });
+         * 
+         */
         
         
     }
@@ -237,9 +240,6 @@ rex_extension::register('PACKAGES_INCLUDED', function( $ep ) {
                 $sql->setValues($values);
                 $sql->setWhere('id = :id',['id'=>$ra_generate_article['ID']]);
                 $sql->update();
-
-
-
             }
 
 

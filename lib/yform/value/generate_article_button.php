@@ -73,7 +73,7 @@ class rex_yform_value_generate_article_button extends rex_yform_value_abstract
             } else {
                 $this->params['form_output'][$this->getId()] = '<div class="form-group clearfix" id="vp_create_article_element">
                 <button class="btn btn-save" style="float:right" name="generate_article" type="submit" id="generate_article" value="1">Artikel anlegen</button>
-                </div>';
+                </div>';                
             }
         }
 
