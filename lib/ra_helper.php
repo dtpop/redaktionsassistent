@@ -78,19 +78,25 @@ class ra_helper {
      * Datum wird berücksichtigt
      * online Status wird berücksichtigt
      * Standardmäßig wird im ganzen Pfad (Kategorie + Unterkategorie) gesucht
+     * optionale Suche nach einem bestimmten Template möglich
      * 
      * Wird im Megamenü verwendet
      * 
      * @param type $count
      * @param type $category_id
      */
-    public static function find_newest_articles($count = 10, $category_id = 0, $start = 0, $get_rows = false) {
+    public static function find_newest_articles($count = 10, $category_id = 0, $start = 0, $get_rows = false, $template_id = 0) {
+		
+		if (rex_addon::get('yrewrite')->isAvailable() && rex_yrewrite::getCurrentDomain()) {
+			$current_domain_id = rex_yrewrite::getCurrentDomain()->getId();
+		} else {
+			$current_domain_id = 0;
+		}
+        
+//        $current_domain_id = rex_addon::get('yrewrite')->isAvailable() ? rex_yrewrite::getCurrentDomain()->getId() : 0;
+        
 
         $sql = rex_sql::factory();
-        $limit = '';
-        if ($count) {
-            $limit = ' LIMIT ' . $start . ',' . $count;
-        }
 
         $where = self::get_where_for_online_articles();
 
@@ -105,23 +111,44 @@ class ra_helper {
             $where .= ' AND FIND_IN_SET(:category_id,REPLACE(path,"|",","))';
             $params['category_id'] = $category_id;
         }
-
-
+        
+        if ($template_id) {
+            $where .= ' AND template_id = :template_id';
+            $params['template_id'] = $template_id;
+        }
 
         $qry = 'SELECT id FROM ' . rex::getTable('article') . ' '
                 . 'WHERE ' . $where . ' '
-                . 'ORDER BY art_online_from DESC' . $limit;
+                . 'ORDER BY art_online_from DESC';
         $sql->setQuery($qry, $params);
+        
 
-        if ($get_rows) {
-            return $sql->getRows();
-        }
-
-        $result = $sql->getArray();
-        $result = array_column($result, 'id');
+        $rows = $sql->getRows();
         $articles = [];
-        foreach ($result as $res) {
-            $articles[] = rex_article::get($res);
+        
+        $found = 0;
+        for ($i = 0; $i < $rows; ++$i) {            
+            $article_id = $sql->getValue('id');
+            // Bei Multidomain schauen, ob der Artikel zur aktuellen Domain gehört
+            if ($current_domain_id) {
+                if (rex_yrewrite::getDomainByArticleId($article_id)->getId() == $current_domain_id) {
+                    if ($found >= $start) {
+                        $articles[] = rex_article::get($article_id);
+                    }
+                }
+            } else {
+                if ($found >= $start) {
+                    $articles[] = rex_article::get($article_id);
+                }
+            }
+            $found++;
+            $sql->next();
+            if ($count && count($articles) >= $count) {
+                break;
+            }
+        }
+        if ($get_rows) {
+            return count($articles);
         }
 
         return $articles;

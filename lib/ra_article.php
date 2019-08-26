@@ -140,7 +140,52 @@ class ra_article {
         $sql->update();
         
     }
+    
+    
+    public static function regenerate_paths () {
+        $sql = rex_sql::factory()->setTable(rex::getTable('article'));
+        $sql->select();
+        
+        while ($row = $sql->getRow(PDO::FETCH_OBJ)) {
+            $id = (int) $row->{rex::getTable('article').'.id'};
+            $clang_id = (int) $row->{rex::getTable('article').'.clang_id'};
+            $rex_article = rex_article::get($id,$clang_id);
+//            dump($clang_id);
+            if ($rex_article) {
+                self::set_path($rex_article);
+            }
+            $sql->next();            
+        }        
+        return;        
+    }
 
+    public static function set_path ($rex_article) {
+        if (!$rex_article) {
+            return;
+        }
+        $path = [];
+        $tmp_article = $rex_article;
+        while ($parent = $tmp_article->getParent()) {
+            $path[] = $parent->getId();
+            $tmp_article = $parent;
+        }        
+        if ($path) {
+            $path_string = '|'.implode('|',array_reverse($path)).'|';
+        } else {
+            $path_string = '|';
+        }
+        
+        if ($rex_article->getValue('path') != $path_string) {
+            $sql = rex_sql::factory()->setTable(rex::getTable('article'));
+//            $sql->setDebug();
+            $sql->setWhere('id = :id AND clang_id = :clang_id',['id'=>$rex_article->getId(),'clang_id'=>$rex_article->getValue('clang_id')]);
+            $sql->setValue('path',$path_string);
+            $sql->update();
+            echo rex_view::error('Artikel: '.$rex_article->getId().' - Alter Pfad: '.$rex_article->getValue('path').' - Neuer Pfad: '.$path_string);
+        }
+        return;
+        
+    }
 
 
     

@@ -6,9 +6,11 @@ rex_yform_manager_dataset::setModelClass('rex_redaktionsassistent', ra_data::cla
 
 rex_yform::addTemplatePath($this->getPath('ytemplates'));
 
+/*
 if (rex_addon::get('yrewrite')->isAvailable()) {
     rex_yrewrite::setScheme(new ra_rewrite_class());
-}    
+} 
+*/   
 
 
 rex_extension::register('PACKAGES_INCLUDED', function( $ep ) {
@@ -200,6 +202,10 @@ rex_extension::register('PACKAGES_INCLUDED', function( $ep ) {
 //            $all_ids = array_column($result,'rex_article');
             foreach ($result as $rec) {
                 ra_article::sync_to_task($rec, $cache_deleted = true);
+            }
+            if (rex_config::get('redaktionsassistent','regenerate_paths')) {
+                ra_article::regenerate_paths();
+                echo rex_view::info('Pfade wurden geprüft.');
             }
         });
         

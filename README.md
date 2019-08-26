@@ -121,6 +121,9 @@ $items = $query->find();
 Bei letzterem Modulcode werden die wichtigsten Artikel bevorzugt (durch die Sortierung important = desc). Anschließend wird mit den neuesten Artikel auf die gewünschte Anzahl von 3 Einträgen (limit(0,3)) aufgefüllt.
 Das Yorm Objekt berücksichtigt bereits art_online_from, art_online_to und status. Da es als Query zur Verfügung steht, kann es über beliebige Yorm Funktionen erweitert werden.
 
+## Einstellungen
+
+In den Einstellungen kann festgelegt werden, dass die Path Einträge in der REDAXO Artikel Tabelle neu gesetzt werden. Dies sollte nur im Ausnahmefall notwendig sein. Die Artikelstruktur bleibt dabei erhalten.
 
 ## Todo
 

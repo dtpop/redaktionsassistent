@@ -12,6 +12,8 @@ page:
             title: Bearbeitung
         assign_articles:
             title: Artikel zuordnen
+        settings:
+            title: Einstellungen
 requires:
     redaxo: '^5.5'
     packages:
