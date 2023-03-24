@@ -16,7 +16,7 @@ class rex_yform_value_date_ra extends rex_yform_value_abstract
         VALUE_DATE_DEFAULT = 'YYYY-MM-DD';
     const VALUE_DATE_FORMATS = ['YYYY-MM-DD' => 'YYYY-MM-DD', 'DD-MM-YYYY' => 'DD-MM-YYYY', 'MM-DD-YYYY' => 'MM-DD-YYYY', 'MM-YYYY' => 'MM-YYYY', 'YYYY-MM' => 'YYYY-MM', 'DD-MM' => 'DD-MM', 'MM-DD' => 'MM-DD'];
 
-    public function preValidateAction()
+    public function preValidateAction() : void
     {
         // if date is unformated
         $value = $this->getValue();
@@ -182,12 +182,12 @@ class rex_yform_value_date_ra extends rex_yform_value_abstract
         
     }
 
-    public function getDescription()
+    public function getDescription() : string
     {
         return 'date_ra|name|label| [jahrstart/-5] | [jahrende/+5 ]| [Anzeigeformat YYYY-MM-DD] | [1/Aktuelles Datum voreingestellt] | [no_db] ';
     }
 
-    public function getDefinitions()
+    public function getDefinitions() : array
     {
         return [
             'type' => 'value',

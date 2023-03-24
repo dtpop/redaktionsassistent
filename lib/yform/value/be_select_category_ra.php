@@ -113,7 +113,7 @@ class rex_yform_value_be_select_category_ra extends rex_yform_value_abstract
         $this->setValue(implode(',', $this->getValue()));
     }
 
-    public function getDefinitions()
+    public function getDefinitions() : array
     {
         return [
             'type' => 'value',
@@ -169,7 +169,7 @@ class rex_yform_value_be_select_category_ra extends rex_yform_value_abstract
                     $cname .= ' [' . $cid . ']';
                 }
 
-                $options[$cid] = str_repeat('&nbsp;&nbsp;&nbsp;', $level-1) . $cname;
+                $options[$cid] = str_repeat('&nbsp;&nbsp;&nbsp;', max([$level-1,0])) . $cname;
                 $childs = $cat->getChildren($ignoreOfflines);
                 if (is_array($childs)) {
                     foreach ($childs as $child) {

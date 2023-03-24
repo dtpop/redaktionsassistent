@@ -33,12 +33,12 @@ class rex_yform_value_dbid extends rex_yform_value_abstract {
         }
     }
 
-    public function getDescription()
+    public function getDescription() : string
     {
         return 'dbid|name|label|defaultwert|[no_db]|[attributes]|notice';
     }
 
-    public function getDefinitions()
+    public function getDefinitions() : array
     {
         return [
             'type' => 'value',
