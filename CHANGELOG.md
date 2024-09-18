@@ -1,5 +1,13 @@
 Changelog
 =========
+
+
+Version 1.0.3 - 
+--------------------------
+
+* Installation für REX 5.14.1 angepasst
+
+
 Version 1.0.2 - 24.03.2023
 --------------------------
 
