@@ -87,13 +87,14 @@ class rex_yform_value_be_select_category_ra extends rex_yform_value_abstract
         }
 
         if (!is_array($this->getValue())) {
-            $this->setValue(explode(',', $this->getValue()));
+            $this->setValue(explode(',', (string) $this->getValue()));
         }
         
         $output = $this->parse('value.selectra.tpl.php', compact('options', 'multiple', 'size'));
         
-//        dump($params);
-        if ($params['rex_article']) {
+        if ($params['rex_article'] && $this->name == 'category') {
+            // Nur wenn das Feld "category" heißt, wird es disabled, wenn der Artikel bereits angelegt ist.
+            // Der Artikel kann nicht verschoben werden.
             $article = rex_article::get($params['rex_article']);
             if ($article instanceof rex_article) {
                 $cat = $article->getCategory();

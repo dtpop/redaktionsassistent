@@ -13,7 +13,54 @@
  */
 
 class ra_data extends \rex_yform_manager_dataset {
-    
+    public function getFields(array $filter = []) : array
+    {
+        $fields = $this->getTable()->getFields($filter);
+
+        if (rex::isFrontend()) {
+            return $fields;
+        }
+
+        /*
+        if (rex_config::get('redaktionsassistent','multicategory_mode')) {
+            return $fields;
+        }
+        */
+
+
+        foreach ($fields as $i => $field) {
+            if (!rex_config::get('redaktionsassistent','multicategory_mode')) {
+                if ('publish_categories' == $field->getName()) {
+                    // hebt das Feld auf, es wird später im Formular auch nicht gezeigt.
+                    unset($fields[$i]);
+                }
+            }
+            if (rex_config::get('redaktionsassistent','hide_online_to')) {
+                if ('art_online_to' == $field->getName()) {
+                    // hebt das Feld auf, es wird später im Formular auch nicht gezeigt.
+                    unset($fields[$i]);
+                }
+            }
+            if (rex_config::get('redaktionsassistent','hide_id')) {
+                if ('id2' == $field->getName()) {
+                    // hebt das Feld auf, es wird später im Formular auch nicht gezeigt.
+                    unset($fields[$i]);
+                }
+            }
+
+            if (rex_config::get('redaktionsassistent','fixed_target_category')) {
+                if ('category' == $field->getName()) {
+                    // hebt das Feld auf, es wird später im Formular auch nicht gezeigt.
+                    unset($fields[$i]);
+                }
+            }
+
+
+        }
+
+        return $fields;
+    }
+
     
 }
 
@@ -44,37 +91,38 @@ class ra_article {
         $typerecord = $sql->getArray();
         $template_id = 1;
         $article_template_id = 0;
+
+        if ($cat = rex_config::get('redaktionsassistent','fixed_target_category')) {
+            // Fixe Kategorie einstellen ...
+            $params['category'] = $cat;
+        }
         
         // Wenn ein Artikel als Template definiert ist
         if ($typerecord && $typerecord[0]['article_template_id']) {
             $article_template_id = $typerecord[0]['article_template_id'];            
-        } elseif ($typerecord) {
+        } elseif ($typerecord && $typerecord[0]['template_id']) {
             $template_id = $typerecord[0]['template_id'];
         }
-        
-        if ($article_template_id) {
 
-            rex_article_service::copyArticle($article_template_id,$params['category']);
-            
+        if ($article_template_id) {           
+            // Wenn in diesem Artikel Template ein Artikel definiert ist, wird dieser kopiert ...
+            rex_article_service::copyArticle($article_template_id,$params['category']);            
         } else {        
             $data = [
                 'category_id' => $params['category'],
                 'priority' => 1,
                 'name' => $params['name'],
-                'template_id' => 1,
+                'template_id' => $template_id,
             ];
 
             rex_article_service::addArticle($data);
         }
-        
-        if ($art_id = rex_session('ra_generated_article_id','int',0)) {
-            rex_response::sendRedirect(trim(rex::getServer(),'/').'/redaxo/index.php?page=content/edit&category_id='.$params['category'].'&article_id='.$art_id.'&clang=1&mode=edit');
-            rex_set_session('ra_generated_article_id','');
-        }
-        
 
-        
-//        rex_response::sendRedirect(rex_getUrl($article_id, $clang, $params, '&'));
+//        exit;
+        if ($art_id = rex_session('ra_generated_article_id','int',0)) {
+            rex_set_session('ra_generated_article_id','');
+            echo rex_view::success('Der Artikel wurde angelegt. <a href="'.trim(rex::getServer(),'/').'/redaxo/index.php?page=content/edit&category_id='.$params['category'].'&article_id='.$art_id.'&clang=1&mode=edit'.'">Direkt zur Bearbeitung ...</a>');
+        }        
     }
     
     

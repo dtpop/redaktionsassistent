@@ -2,18 +2,73 @@
 
 setlocale(LC_TIME,'de');
 
+if (rex_addon::get('yrewrite')->isAvailable()) {
+    rex_yrewrite::setScheme(new ra_rewrite_class());
+} 
+   
 rex_yform_manager_dataset::setModelClass('rex_redaktionsassistent', ra_data::class);
 
 rex_yform::addTemplatePath($this->getPath('ytemplates'));
 
-/*
-if (rex_addon::get('yrewrite')->isAvailable()) {
-    rex_yrewrite::setScheme(new ra_rewrite_class());
-} 
-*/   
-
 
 rex_extension::register('PACKAGES_INCLUDED', function( $ep ) {
+
+//    $addon = rex_addon::get('redaktionsassistent');
+
+    if (rex::isBackend()) {
+        /*
+        rex_article_service::addArticle([
+            'category_id'=>0,
+            'priority' => 1,
+            'name' => 'T-EST',
+            'template_id' => 1,
+
+        ]);
+        */
+        // Feld publish_categorie im Formular ausblenden, wenn die Funktion nicht über die Settings aktiv gestellt wurde
+        if (!$this->getConfig('multicategory_mode')) {
+            rex_extension::register("YFORM_DATA_LIST", function( $ep ) {
+
+            if ($ep->getParam("table")->getTableName()=="rex_redaktionsassistent"){
+                $list = $ep->getSubject();
+                $list->removeColumn("publish_categories");
+                }
+            });
+        }
+        // Feld online bis im Formular ausblenden
+        if ($this->getConfig('hide_online_to')) {
+            rex_extension::register("YFORM_DATA_LIST", function( $ep ) {
+
+            if ($ep->getParam("table")->getTableName()=="rex_redaktionsassistent"){
+                $list = $ep->getSubject();
+
+                $list->removeColumn("art_online_to");
+                }
+            });
+        }
+        // Feld ID im Formular ausblenden
+        if ($this->getConfig('hide_id')) {
+            rex_extension::register("YFORM_DATA_LIST", function( $ep ) {
+
+            if ($ep->getParam("table")->getTableName()=="rex_redaktionsassistent"){
+                $list = $ep->getSubject();
+
+                $list->removeColumn("id");
+                }
+            });
+        }
+        // Feld category
+        if ($this->getConfig('fixed_target_category')) {
+            rex_extension::register("YFORM_DATA_LIST", function( $ep ) {
+
+            if ($ep->getParam("table")->getTableName()=="rex_redaktionsassistent"){
+                $list = $ep->getSubject();
+
+                $list->removeColumn("category");
+                }
+            });
+        }
+    }
 
     if (rex::isBackend() && rex_request('page') == 'redaktionsassistent/tasks') {
         
@@ -79,7 +134,7 @@ rex_extension::register('PACKAGES_INCLUDED', function( $ep ) {
                         $article = rex_article::get($art_id);
                         if ($article instanceof rex_article) {
                             $class_additional = structure_plus::get_row_class($article->getValue('art_online_from'), $article->getValue('art_online_to'), $article->getValue('status'));
-                            return '<span class="' . $class_additional . '">' . $labels[$class_additional] . '</span>';
+                            return '<span class="' . $class_additional . '">' . ($labels[$class_additional] ?? '') . '</span>';
                         } else {
                             return 'Artikel gelöscht';
                         }
@@ -137,7 +192,7 @@ rex_extension::register('PACKAGES_INCLUDED', function( $ep ) {
 
         rex_extension::register('YFORM_DATA_UPDATED', function( $ep ) {
             $params = $ep->getSubject()->objparams['value_pool']['email'];
-            
+
             
             // Rückwärtsaktualiserung in den Artikel + Cache löschen
             
@@ -161,29 +216,16 @@ rex_extension::register('PACKAGES_INCLUDED', function( $ep ) {
             }
         });
 
-
-        /*
-        rex_extension::register('YFORM_MANAGER_DATA_PAGE', function( $ep ) {
-            rex_extension::register('OUTPUT_FILTER', function( $ep ) {
-                $data_id = rex_request('data_id', 'int', '');
-                $sql = rex_sql::factory()->setTable(rex::getTable('redaktionsassistent'));
-                $sql->setWhere('id = :id', ['id' => $data_id]);
-                $sql->select();
-                $res = $sql->getArray();
-                if ($res[0]['rex_article']) {
-                    $text = $ep->getSubject();
-//                    $text = str_replace('class="locked_element', 'disabled class="locked_element', $text);                    
-                }
-                return $text;
-            });
-        });
-         * 
-         */
-        
         
     }
     
     if (rex::isBackend()) {
+
+        
+        rex_view::addCssFile(rex_addon::get('redaktionsassistent')->getAssetsUrl('select2/css/select2.min.css'));
+        rex_view::addJsFile(rex_addon::get('redaktionsassistent')->getAssetsUrl('bescripts.js'));
+        rex_view::addJsFile(rex_addon::get('redaktionsassistent')->getAssetsUrl('select2/js/select2.min.js'));
+
         
         // Task Datei mit Artikeldaten synchronisieren        
         $extension_points = ['ART_STATUS','ART_MOVED','ART_UPDATED','ART_META_UPDATED','ART_DELETED'];
@@ -213,6 +255,7 @@ rex_extension::register('PACKAGES_INCLUDED', function( $ep ) {
         // Die Redaktionsassistent-Tabelle wird aktualisiert, der Artikel wird dort eingetragen
 
         rex_extension::register('ART_ADDED', function ($params) {
+
             $_params = $params->getParams();
 
             $ra_generate_article = rex_session('ra_generate_article','array',[]);
@@ -225,6 +268,12 @@ rex_extension::register('PACKAGES_INCLUDED', function( $ep ) {
                 // art_online_from Datum in Artikeltabelle eintragen
                 $values = [];
                 $values['art_online_from'] = strtotime($ra_generate_article['art_online_from']);
+
+                if (!rex_config::get('redaktionsassistent','hide_online_to')) {
+                    // wenn online to-Feld aktiv, Wert übernehmen ...
+                    $values['art_online_to'] = strtotime($ra_generate_article['art_online_to']);
+                }
+
                 $values['art_raid'] = $ra_generate_article['art_raid'];
 //                $values['art_type'] = $ra_generate_article['type'];
                 $sql->setTable(rex::getTable('article'));
@@ -267,6 +316,11 @@ rex_extension::register('PACKAGES_INCLUDED', function( $ep ) {
                 // art_online_from Datum in Artikeltabelle eintragen
                 $values = [];
                 $values['art_online_from'] = strtotime($ra_generate_article['art_online_from']);
+
+                if (!rex_config::get('redaktionsassistent','hide_online_to')) {
+                    // wenn online to-Feld aktiv, Wert übernehmen ...
+                    $values['art_online_to'] = strtotime($ra_generate_article['art_online_to']);
+                }
 //                $values['art_slider_override'] = $ra_generate_article['art_slider_override'];
 //                $values['art_hauptteaser'] = $ra_generate_article['art_hauptteaser'];
                 $values['art_raid'] = $ra_generate_article['art_raid'];

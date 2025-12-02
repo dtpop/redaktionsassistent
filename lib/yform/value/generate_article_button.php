@@ -17,6 +17,7 @@ class rex_yform_value_generate_article_button extends rex_yform_value_abstract
     public function enterObject()
     {
         $params = $this->params['value_pool']['email'];
+        $params['category'] = $params['category'] ?? '';
         $labels = $this->getElement('labels');
         if ($labels == '') {
             $labels = [$this->getElement('label')];

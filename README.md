@@ -125,6 +125,90 @@ Das Yorm Objekt berücksichtigt bereits art_online_from, art_online_to und statu
 
 In den Einstellungen kann festgelegt werden, dass die Path Einträge in der REDAXO Artikel Tabelle neu gesetzt werden. Dies sollte nur im Ausnahmefall notwendig sein. Die Artikelstruktur bleibt dabei erhalten.
 
+Weiterhin kann der Redaktionsassistent für weitere Verwendungszwecke konfiguriert werden. Mit der Version 1.1 sind neue Einstellungsmöglichkeiten hinzu gekommen. Die Verwendung sollte aber vollkommen kompatibel zu Vorversionen sein. Dennoch rate ich bei einem Update zu einer Datensicherung und gründlichen Tests.
+
+Mit dem Feld "Multikategoriemodus" ist es möglich einen Artikel mehreren Redaxo Kategorien zuzuweisen. Die erste Auswahl Kategorie bleibt als Single Select erhalten. Damit wird die Kategorie festgelegt, in der der Artikel in der Redaxo Struktur angelegt wird. Im Feld "Kategorien für die Veröffentlichung" können dann mehrere Kategorien aus dem Redaxo Strukturbaum ausgewählt werden. Diese Einstellung wird in der Datentabelle des Redaktionsassistenten im Feld publish_categories gespeichert. Auf dieses Eintrag kann dann zugegriffen werden, um den Artikel auszugeben.
+
+Dann kann beispielsweise dieser Mustercode verwendet werden:
+
+```php
+
+<?php
+// Liste aus Redaktionsassistent holen
+
+$current_category_id = rex_category::getCurrent()->getId();
+
+$query = rex_yform_manager_table::get(rex::getTable('redaktionsassistent'))->query();
+$query
+    ->where('rex_article', 0, '>')
+    ->whereListContains('publish_categories', $current_category_id)
+;
+
+$article_list = $query->find();
+
+// Artikelliste bilden.
+// status online berücksichtigen
+// Sortierung online_from
+
+$rex_articles = [];
+$online_from = [];
+
+foreach ($article_list as $ra_data) {
+    $rex_article = rex_article::get($ra_data->rex_article);
+    if (!$rex_article->getValue('status') == 1) {
+        continue;
+    }
+    if ((int) $rex_article->getValue('art_online_from') > time() || $rex_article->getValue('art_online_from') < 0) {
+        // online from berücksichtigen
+        continue;
+    }
+    if ($rex_article->getValue('art_online_to') && $rex_article->getValue('art_online_to') < time()) {
+        // online to berücksichtigen
+        continue;
+    }
+    $rex_articles[] = $rex_article;
+    $online_from[] = $rex_article->getValue('art_online_from');
+}
+
+
+// neueste Artikel oben
+array_multisort($online_from, SORT_ASC, $rex_articles);
+
+?>
+
+<ul>
+    <?php foreach ($rex_articles as $article) : ?>
+        <li>
+            <p><?= date('d.m.Y', $article->getValue('art_online_from')) ?></p>
+            <h3><?= $article->getName() ?></h3>
+            <a href="<?= rex_getUrl($article->getId()) ?>">mehr ...</a>
+        </li>
+
+    <?php endforeach ?>
+</ul>
+
+```
+
+Wenn der Code in einem Modul untergebracht wird, so muss auf jeder Seite (Kategorieübersicht), auf der Artikelverweise des Redaktionsassistenten ausgegeben werden sollen das Modul eingebaut werden. Der Code kann aber auch im Template eingebaut werden.
+
+## Rewriter
+
+Für den Redaktionsassistenten steht nun auch ein eigener Rewriter zur Verfügung. Um hier den Redaktionsassistenten mit dem Addon yrewrite_scheme kompatibel zu halten, musste der Redaktionsassistent den Parameter load: late bekommen.
+
+Der Rewriter kann in den Settings konfiguriert werden. Die Artikel erhalten dann die entsprechende Url.
+
+## Erweiterungen
+
+Über die Tabelle rex_redaktionsassistent können zusätzliche eigene Felder verwaltet werden.
+
+Beispiel: Es soll ein Autorenfeld integriert werden, über das einem Redaktionsassistentendatensatz mehrere Autoren hinzugefügt werden können. Die Autoren sollen per Drag and drop sortierbar sein. Hierfür muss eine entsprechende Autorentabelle bereits angelegt sein. Außerdem muss das super Addon relation_select installiert sein. Dann macht man in der Tabelle rex_redaktionsassistent ein neues Textfeld und gibt diesem beispielsweise folgende individuelle Konfiguration:
+
+`{"data-relation-mode":"modal","data-relation-config":"{\"table\": \"rex_autoren\",\"valueField\": \"id\",\"labelField\": \"anrede|vorname|nachname\"}"}`
+
+Wenn man Tags nutzen will, so muss auch hierfür eine Tabelle angelegt werden. Dann macht man in der Tabelle rex_redaktionsassistent darauf eine be_relation mit Multiple Select.
+
+Dann gibt man diesem Feld das individuelle Attribut `{"id":"tagselect2"}`.
+
 ## Todo
 
 - flexible Synchronisation weiterer Metainfos implementieren (z.B. für besondere Hervorhebung bzw. Ausgabe auf der Startseite usw.).

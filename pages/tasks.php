@@ -4,6 +4,9 @@
  */
 
 
+ $addon = $this;
+ 
+
 $table_name = 'rex_redaktionsassistent';
 $table = rex_yform_manager_table::get($table_name);
 
@@ -24,3 +27,4 @@ if ($table && rex::getUser() && (rex::getUser()->isAdmin() || rex::getUser()->ge
         echo rex_view::warning(rex_i18n::msg('yform_table_not_found'));
     }
 }
+?>

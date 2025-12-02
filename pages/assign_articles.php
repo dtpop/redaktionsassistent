@@ -8,7 +8,10 @@ if (rex_request('function','string') == 'run') {
     }
 }
 
-$qry = 'SELECT id, name, createdate, status, art_online_from, catname, path FROM '.rex::getTable('article').' WHERE clang_id = 1 AND startarticle = 0 AND art_raid = "" ORDER BY createdate DESC';
+// $qry = 'SELECT id, name, createdate, status, art_online_from, catname, path FROM '.rex::getTable('article').' WHERE clang_id = 1 AND startarticle = 0 AND art_raid = "" ORDER BY createdate DESC';
+$qry = 'SELECT id, name, createdate, status, art_online_from, catname, path FROM '.rex::getTable('article').' WHERE clang_id = 1 AND startarticle = 0 AND (ISNULL(art_raid) OR art_raid = "") ORDER BY createdate DESC';
+
+$sql = rex_sql::factory()->setQuery($qry);
 
 $list = rex_list::factory($qry);
 
