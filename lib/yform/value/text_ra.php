@@ -81,34 +81,51 @@ class rex_yform_value_text_ra extends rex_yform_value_abstract
 
     public static function getSearchFilter($params)
     {
-        $sql = rex_sql::factory();
-        $value = $params['value'];
-        $field = $params['field']->getName();
+        $value = trim($params['value']);
+        /** @var rex_yform_manager_query $query */
+        $query = $params['query'];
+        $field = $query->getTableAlias() . '.' . $params['field']->getName();
 
-        if ($value == '(empty)') {
-            return ' (' . $sql->escapeIdentifier($field) . ' = "" or ' . $sql->escapeIdentifier($field) . ' IS NULL) ';
+        if ('(empty)' == $value) {
+            return $query->whereNested(static function (rex_yform_manager_query $query) use ($field) {
+                $query
+                    ->where($field, '')
+                    ->where($field, null)
+                ;
+            }, 'OR');
         }
-        if ($value == '!(empty)') {
-            return ' (' . $sql->escapeIdentifier($field) . ' <> "" and ' . $sql->escapeIdentifier($field) . ' IS NOT NULL) ';
+        if ('!(empty)' == $value) {
+            return $query->whereNested(static function (rex_yform_manager_query $query) use ($field) {
+                $query
+                    ->where($field, '', '<>')
+                    ->where($field, null, '<>')
+                ;
+            }, 'OR');
+        }
+
+        $invertWhere = false;
+        if ('!' === substr($value, 0, 1)) {
+            $invertWhere = true;
+            $value = substr($value, 1);
         }
 
         $pos = strpos($value, '*');
-        if ($pos !== false) {
+        if (false !== $pos) {
             $value = str_replace('%', '\%', $value);
             $value = str_replace('*', '%', $value);
-            return $sql->escapeIdentifier($field) . ' LIKE ' . $sql->escape($value);
+            return $query->where($field, $value, $invertWhere ? 'NOT LIKE' : 'LIKE');
         }
-        return $sql->escapeIdentifier($field) . ' = ' . $sql->escape($value);
+
+        return $query->where($field, $value, $invertWhere ? '<>' : '=');
     }
 
     public static function getListValue($params)
     {
-        $value = $params['subject'];
-        $length = strlen($value);
-        $title = $value;
-        if ($length > 40) {
-            $value = mb_substr($value, 0, 20).' ... '.mb_substr($value, -20);
+        $value = (string) $params['subject'];
+        $length = mb_strlen($value);
+        if ($length > 100) {
+            $value = mb_substr($value, 0, 50) . ' ... ' . mb_substr($value, -50);
         }
-        return '<span title="'.rex_escape($title).'">'.rex_escape($value).'</span>';
+        return '<span>' . rex_escape($value) . '</span>';
     }
 }

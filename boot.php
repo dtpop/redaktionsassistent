@@ -279,7 +279,7 @@ rex_extension::register('PACKAGES_INCLUDED', function( $ep ) {
                 $sql->setTable(rex::getTable('article'));
                 $sql->setValues($values);
                 $sql->setWhere('id = :id',['id'=>$_params['id']]);
-                $sql->setDebug();
+//                $sql->setDebug();
                 $sql->update();
 
                 // Session wieder zurücksetzen
